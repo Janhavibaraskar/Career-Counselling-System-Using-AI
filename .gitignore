@@ -1,0 +1,45 @@
+venv/
+__pycache__/
+.env
+static/uploads/
+*.pyc
+
+# Python virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables (contains API keys & DB passwords)
+.env
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Flask session / instance folder
+instance/
+
+# Uploaded user files
+static/uploads/
+
+# Database files (if ever switched to SQLite)
+*.sqlite3
+
+# MySQL dump backups (if created)
+*.sql
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# VS Code settings (optional)
+.vscode/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak

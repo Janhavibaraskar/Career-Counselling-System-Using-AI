@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ===== HERO SLIDER ===== -->
+<div id="careerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#careerCarousel" data-bs-slide-to="0" class="active"></button>
+    <button type="button" data-bs-target="#careerCarousel" data-bs-slide-to="1"></button>
+    <button type="button" data-bs-target="#careerCarousel" data-bs-slide-to="2"></button>
+  </div>
+
+  <div class="carousel-inner rounded shadow">
+
+    <!-- Slide 1 -->
+    <div class="carousel-item active">
+      <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b"
+           class="d-block w-100" style="height:450px; object-fit:cover;">
+      <div class="carousel-caption text-start">
+        <h1 class="fw-bold">Smart AI Career Counseling</h1>
+        <p>Personalized guidance for Class 10, 12 & Graduates</p>
+        <a href="/login" class="btn btn-success btn-lg">Get Started</a>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="carousel-item">
+      <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b"
+           class="d-block w-100" style="height:450px; object-fit:cover;">
+      <div class="carousel-caption">
+        <h1 class="fw-bold">Career Assessment</h1>
+        <p>Logical • Psychometric • Personality Tests</p>
+        <a href="/assessment" class="btn btn-primary btn-lg">Take Assessment</a>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="carousel-item">
+      <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c"
+           class="d-block w-100" style="height:450px; object-fit:cover;">
+      <div class="carousel-caption text-end">
+        <h1 class="fw-bold">Know Your Skill Gaps</h1>
+        <p>Improve skills & choose the right career path</p>
+        <a href="/about" class="btn btn-warning btn-lg">Learn More</a>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="carousel-control-prev" type="button" data-bs-target="#careerCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#careerCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+
+</div>
+
+<!-- ===== FEATURES SECTION ===== -->
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features-section mt-5">
+  <div class="container">
+    <div class="row text-center mb-4">
+      <h2 class="fw-bold">Why Choose Our AI Career Counselor?</h2>
+      <p class="text-muted">
+        A scientific, data-driven approach to career guidance
+      </p>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Card 1 -->
+      <div class="col-md-4">
+        <div class="feature-card">
+        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
+     alt="Stream Recommendation">
+          <div class="card-body">
+            <h5>Stream Recommendation</h5>
+            <p>
+              Get expert guidance to choose the right stream after Class 10
+              based on academic performance, aptitude, and interests.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-4">
+        <div class="feature-card">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80"
+     alt="Adaptive Assessment">
+
+        <div class="card-body">
+            <h5>Career Assessment</h5>
+            <p>
+              A smart assessment covering logical, psychometric, and
+              personality dimensions that adapts to your responses.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-4">
+        <div class="feature-card">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71"
+               alt="Skill Gap Analysis">
+          <div class="card-body">
+            <h5>Skill Gap Analysis</h5>
+            <p>
+              Identify your strengths, weaknesses, and missing skills with
+              clear recommendations for improvement and learning paths.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===== CALL TO ACTION ===== -->
+<div class="text-center mt-5 p-4 bg-light rounded">
+  <h2 class="fw-bold">Confused about your career?</h2>
+  <p class="lead">Let AI guide you step-by-step toward the right future.</p>
+  <a href="/login" class="btn btn-success btn-lg">Start Your Journey</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,711 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container fade-section">
+
+<div class="text-center mb-4">
+<h2 class="fw-bold">Career Assessment Test</h2>
+<p class="text-muted">
+Adaptive assessment analyzing your interests, abilities and personality
+</p>
+</div>
+
+<div class="progress mb-4" style="height:8px;">
+<div id="progressBar" class="progress-bar bg-success" style="width:0%"></div>
+</div>
+
+<div class="card shadow-lg border-0 rounded-4 p-4 mx-auto" style="max-width:700px;">
+
+<span id="categoryBadge" class="badge bg-primary mb-3 px-3 py-2"></span>
+
+<h5 id="questionText" class="mb-4"></h5>
+
+<form id="answerForm"></form>
+
+<div class="d-grid mt-4">
+<button type="button" id="nextBtn" class="btn btn-primary btn-lg" onclick="nextQuestion()">
+Next Question
+</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const studentInterest = "{{ interest }}"
+
+const TOTAL_QUESTIONS = 15
+
+const interestTotal = 5
+const analyticalTotal = 3
+const personalityTotal = 4
+const domainTotal = 3
+
+const interestQuestions=[
+{q:"I enjoy solving mathematical problems", domain:"Engineering"},
+{q:"I like understanding machines or technology", domain:"Engineering"},
+{q:"I enjoy studying biology", domain:"Medical"},
+{q:"I like designing creative content", domain:"Arts"},
+{q:"I enjoy helping people with personal or emotional problems", domain:"Medical"},
+{q:"I am interested in business and marketing", domain:"Business"},
+{q:"I like writing and storytelling", domain:"Arts"},
+{q:"I enjoy performing experiments and research", domain:"Science"},
+{q:"I like working with computers and coding", domain:"Engineering"},
+{q:"I enjoy designing buildings or graphics", domain:"Architecture"},
+{q:"I like analyzing data and numbers", domain:"Engineering"},
+{q:"I enjoy working with nature", domain:"Agriculture"},
+{q:"I like teaching and explaining concepts", domain:"Education"},
+{q:"I enjoy solving real-world problems using technology", domain:"Engineering"},
+{q:"I like leadership and management roles", domain:"Business"}
+]
+
+const AnalyticalQuestions = {
+
+"Engineering / Technology":[
+{q:"Which word does not belong?",options:["Algorithm","Processor","Database","Banana"],answer:"Banana"},
+
+{q:"Find the next number in the series: 2, 6, 12, 20 ?",options:["28","30","32","36"],answer:"30"},
+
+{q:"Computer : Data :: Brain : ?",options:["Thought","Food","Water","Memory"],answer:"Thought"},
+
+{q:"If a machine produces 5 parts in 10 minutes, how many parts will it produce in 30 minutes?",options:["10","15","20","25"],answer:"15"},
+
+{q:"Which device is primarily used to input data into a computer?",options:["Monitor","Keyboard","Printer","Speaker"],answer:"Keyboard"},
+
+{q:"Find the missing number: 3, 9, 27, ?",options:["54","72","81","108"],answer:"81"},
+
+{q:"Which programming concept allows code reuse?",options:["Loop","Function","Variable","Comment"],answer:"Function"},
+
+{q:"Car : Fuel :: Computer : ?",options:["Electricity","Water","Oil","Gas"],answer:"Electricity"},
+
+{q:"Which component is known as the brain of the computer?",options:["RAM","CPU","Hard Disk","GPU"],answer:"CPU"},
+
+{q:"Find the next number: 5, 10, 20, 40 ?",options:["60","70","80","90"],answer:"80"},
+
+{q:"Which of the following is a programming language?",options:["HTML","Python","HTTP","USB"],answer:"Python"},
+
+{q:"If A > B and B > C, which statement is correct?",options:["A < C","A > C","B < C","C > A"],answer:"A > C"},
+
+{q:"Which technology is mainly used for building intelligent machines?",options:["AI","HTML","CSS","Excel"],answer:"AI"},
+
+{q:"Find the odd one out.",options:["Keyboard","Mouse","Monitor","Printer","Table"],answer:"Table"},
+
+{q:"Which data structure follows the LIFO principle?",options:["Queue","Stack","Array","Tree"],answer:"Stack"}
+],
+
+"Medical / Healthcare":[
+{q:"Which organ pumps blood throughout the human body?",options:["Brain","Heart","Liver","Kidney"],answer:"Heart"},
+
+{q:"Which blood cells help fight infections?",options:["Red blood cells","White blood cells","Platelets","Plasma"],answer:"White blood cells"},
+
+{q:"Normal human body temperature is approximately?",options:["35°C","36°C","37°C","40°C"],answer:"37°C"},
+
+{q:"Which organ is responsible for breathing?",options:["Liver","Heart","Lungs","Kidney"],answer:"Lungs"},
+
+{q:"Which vitamin is produced when the skin is exposed to sunlight?",options:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],answer:"Vitamin D"},
+
+{q:"If a patient takes 2 tablets per day for 5 days, how many tablets will they take in total?",options:["5","7","10","12"],answer:"10"},
+
+{q:"Which organ filters waste from the blood?",options:["Heart","Kidney","Brain","Lungs"],answer:"Kidney"},
+
+{q:"Which system of the body controls thoughts and actions?",options:["Digestive system","Respiratory system","Nervous system","Circulatory system"],answer:"Nervous system"},
+
+{q:"Which medical tool is used to measure body temperature?",options:["Stethoscope","Thermometer","Syringe","X-ray"],answer:"Thermometer"},
+
+{q:"Which nutrient is essential for building and repairing body tissues?",options:["Carbohydrates","Proteins","Fats","Vitamins"],answer:"Proteins"},
+
+{q:"A patient with high blood sugar levels may have which condition?",options:["Hypertension","Diabetes","Asthma","Anemia"],answer:"Diabetes"},
+
+{q:"Which organ is responsible for digestion of food?",options:["Stomach","Heart","Lungs","Brain"],answer:"Stomach"},
+
+{q:"Which part of the body carries oxygen in the blood?",options:["Red blood cells","White blood cells","Platelets","Nerves"],answer:"Red blood cells"},
+
+{q:"If a patient must drink 2 liters of water daily, how much water will they drink in 3 days?",options:["4 liters","5 liters","6 liters","8 liters"],answer:"6 liters"},
+
+{q:"Which healthcare professional usually diagnoses diseases and prescribes treatment?",options:["Pharmacist","Nurse","Doctor","Technician"],answer:"Doctor"}
+],
+
+"Business / Management":[
+{q:"Profit is calculated as?",options:["SP + CP","SP - CP","CP - SP","SP × CP"],answer:"SP - CP"},
+
+{q:"If cost price is 200 and selling price is 250, what is the profit?",options:["40","50","60","70"],answer:"50"},
+
+{q:"Which skill is most important for managing a team?",options:["Leadership","Drawing","Singing","Driving"],answer:"Leadership"},
+
+{q:"If a product’s price increases by 10%, what will be the new price of a product costing 100?",options:["105","108","110","120"],answer:"110"},
+
+{q:"Which department is mainly responsible for promoting products?",options:["Finance","Marketing","Production","HR"],answer:"Marketing"},
+
+{q:"Which financial document shows a company's income and expenses?",options:["Balance Sheet","Income Statement","Invoice","Receipt"],answer:"Income Statement"},
+
+{q:"Which term describes money invested to start a business?",options:["Profit","Capital","Revenue","Expense"],answer:"Capital"},
+
+{q:"If a company sells 50 products at ₹20 each, what is the total revenue?",options:["₹800","₹900","₹1000","₹1100"],answer:"₹1000"},
+
+{q:"Which of the following is an example of entrepreneurship?",options:["Working as an employee","Starting a new business","Studying in college","Teaching students"],answer:"Starting a new business"},
+
+{q:"Which skill helps in making strategic business decisions?",options:["Critical thinking","Painting","Singing","Running"],answer:"Critical thinking"},
+
+{q:"If demand for a product increases but supply stays the same, what usually happens to the price?",options:["Price decreases","Price increases","Price stays same","Price disappears"],answer:"Price increases"},
+
+{q:"Which business activity involves hiring and managing employees?",options:["Marketing","Finance","Human Resource Management","Production"],answer:"Human Resource Management"},
+
+{q:"Which factor is most important for customer satisfaction?",options:["Product quality","Office location","Employee dress code","Company logo"],answer:"Product quality"},
+
+{q:"If a manager assigns tasks and supervises a team, which skill is being used?",options:["Leadership","Drawing","Cooking","Driving"],answer:"Leadership"},
+
+{q:"Which concept refers to planning future business goals?",options:["Strategy","Decoration","Entertainment","Observation"],answer:"Strategy"}
+],
+
+"Law / Legal studies":[
+{q:"Which profession is responsible for representing clients in court?",options:["Doctor","Engineer","Lawyer","Teacher"],answer:"Lawyer"},
+
+{q:"Which principle means everyone is treated equally under the law?",options:["Justice","Equality","Freedom","Authority"],answer:"Equality"},
+
+{q:"Which court is the highest judicial authority in India?",options:["District Court","High Court","Supreme Court","Session Court"],answer:"Supreme Court"},
+
+{q:"Which legal document states the fundamental rights of citizens in India?",options:["Constitution","Agreement","Contract","Bill"],answer:"Constitution"},
+
+{q:"Which branch of law deals with crimes and punishments?",options:["Civil Law","Criminal Law","Corporate Law","Environmental Law"],answer:"Criminal Law"},
+
+{q:"Which legal term means an agreement between two or more parties?",options:["Contract","Judgment","Appeal","Evidence"],answer:"Contract"},
+
+{q:"Which legal professional gives legal advice but may not represent clients in court in some cases?",options:["Advocate","Judge","Lawyer","Consultant"],answer:"Lawyer"},
+
+{q:"If a person is found guilty in court, what is the decision called?",options:["Evidence","Judgment","Agreement","Appeal"],answer:"Judgment"},
+
+{q:"Which term refers to reviewing a lower court's decision in a higher court?",options:["Appeal","Trial","Evidence","Agreement"],answer:"Appeal"},
+
+{q:"Which concept refers to fairness in the legal system?",options:["Justice","Profit","Revenue","Competition"],answer:"Justice"},
+
+{q:"Which person presides over court proceedings and ensures laws are followed?",options:["Lawyer","Judge","Police","Clerk"],answer:"Judge"},
+
+{q:"Which type of law deals with disputes between individuals or organizations?",options:["Criminal Law","Civil Law","Tax Law","Military Law"],answer:"Civil Law"},
+
+{q:"Which document records evidence and statements during a legal case?",options:["Report","Case File","Judgment","Invoice"],answer:"Case File"},
+
+{q:"Which principle ensures that no one is punished without a fair trial?",options:["Due Process","Competition","Profit","Strategy"],answer:"Due Process"},
+
+{q:"Which legal term refers to proof presented in court?",options:["Evidence","Appeal","Judgment","Contract"],answer:"Evidence"}
+],
+
+"Arts & Humanities":[
+{q:"Which activity mainly develops storytelling ability?",options:["Creative writing","Accounting","Coding","Engineering drawing"],answer:"Creative writing"},
+
+{q:"Which subject studies past events and civilizations?",options:["History","Physics","Chemistry","Mathematics"],answer:"History"},
+
+{q:"Which skill is most important for journalists?",options:["Communication","Painting","Driving","Singing"],answer:"Communication"},
+
+{q:"Which field studies human behavior and mind?",options:["Psychology","Biology","Physics","Engineering"],answer:"Psychology"},
+
+{q:"Which profession mainly reports news and information?",options:["Journalist","Doctor","Engineer","Lawyer"],answer:"Journalist"},
+
+{q:"Which activity involves presenting ideas verbally to an audience?",options:["Public speaking","Coding","Designing","Drawing"],answer:"Public speaking"},
+
+{q:"Which subject studies society and social relationships?",options:["Sociology","Chemistry","Physics","Statistics"],answer:"Sociology"},
+
+{q:"Which skill helps understand different cultures and traditions?",options:["Cultural awareness","Programming","Accounting","Mechanics"],answer:"Cultural awareness"},
+
+{q:"Which profession mainly writes articles and news stories?",options:["Writer","Doctor","Engineer","Architect"],answer:"Writer"},
+
+{q:"Which discipline studies ideas about knowledge, truth, and existence?",options:["Philosophy","Biology","Mathematics","Engineering"],answer:"Philosophy"},
+
+{q:"Which skill is important for debating social issues?",options:["Critical thinking","Running","Painting","Cooking"],answer:"Critical thinking"},
+
+{q:"Which activity involves analyzing historical events?",options:["Historical research","Mechanical design","Coding","Lab experiment"],answer:"Historical research"},
+
+{q:"Which profession studies human society and behavior?",options:["Sociologist","Doctor","Engineer","Accountant"],answer:"Sociologist"},
+
+{q:"Which medium is used to broadcast news and stories to the public?",options:["Media","Machine","Engine","Circuit"],answer:"Media"},
+
+{q:"Which skill helps communicate ideas effectively in writing?",options:["Writing skill","Driving skill","Cooking skill","Painting skill"],answer:"Writing skill"}
+],
+
+"Architecture & Design":[
+{q:"Which software is commonly used for architectural drawing?",options:["AutoCAD","Excel","Word","PowerPoint"],answer:"AutoCAD"},
+
+{q:"Which profession designs buildings and structures?",options:["Architect","Doctor","Lawyer","Teacher"],answer:"Architect"},
+
+{q:"Which skill is important for visualizing buildings before construction?",options:["3D visualization","Accounting","Programming","Driving"],answer:"3D visualization"},
+
+{q:"Which factor is most important when designing buildings?",options:["Functionality","Random shape","Noise","Speed"],answer:"Functionality"},
+
+{q:"Which type of design focuses on indoor spaces?",options:["Interior design","Mechanical design","Electrical design","Software design"],answer:"Interior design"},
+
+{q:"Which drawing method shows buildings in three dimensions?",options:["3D modeling","Spreadsheet","Programming","Calculation"],answer:"3D modeling"},
+
+{q:"Which profession plans cities and urban spaces?",options:["Urban planner","Doctor","Lawyer","Chef"],answer:"Urban planner"},
+
+{q:"Which factor improves sustainability in buildings?",options:["Energy efficiency","Bright colors","Large logos","Heavy machines"],answer:"Energy efficiency"},
+
+{q:"Which skill is essential for architects?",options:["Creative thinking","Cooking","Driving","Dancing"],answer:"Creative thinking"},
+
+{q:"Which design focuses on outdoor spaces and gardens?",options:["Landscape design","Mechanical design","Chemical design","Electrical design"],answer:"Landscape design"},
+
+{q:"Which tool is used to create architectural models digitally?",options:["Design software","Calculator","Scanner","Printer"],answer:"Design software"},
+
+{q:"Which principle ensures buildings are safe and stable?",options:["Structural strength","Decoration","Color choice","Furniture"],answer:"Structural strength"},
+
+{q:"Which professional plans the layout of rooms inside a building?",options:["Interior designer","Lawyer","Doctor","Engineer"],answer:"Interior designer"},
+
+{q:"Which process involves planning building structure before construction?",options:["Architectural design","Financial planning","Cooking","Driving"],answer:"Architectural design"},
+
+{q:"Which factor makes buildings environmentally friendly?",options:["Sustainable materials","Heavy metals","Bright lights","Plastic walls"],answer:"Sustainable materials"}
+],
+
+"Agriculture / Environmental Science":[
+{q:"Which science studies plants and crops?",options:["Agriculture","Physics","Chemistry","Mathematics"],answer:"Agriculture"},
+
+{q:"Which factor is essential for plant growth?",options:["Sunlight","Plastic","Metal","Glass"],answer:"Sunlight"},
+
+{q:"Which practice helps protect the environment?",options:["Conservation","Pollution","Deforestation","Waste dumping"],answer:"Conservation"},
+
+{q:"Which resource is important for farming?",options:["Soil","Concrete","Plastic","Steel"],answer:"Soil"},
+
+{q:"Which issue is caused by increasing global temperatures?",options:["Climate change","Traffic","Internet","Finance"],answer:"Climate change"},
+
+{q:"Which farming method protects natural resources?",options:["Sustainable agriculture","Overfarming","Deforestation","Pollution"],answer:"Sustainable agriculture"},
+
+{q:"Which profession studies environmental problems?",options:["Environmental scientist","Engineer","Lawyer","Doctor"],answer:"Environmental scientist"},
+
+{q:"Which gas is important for plant photosynthesis?",options:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"],answer:"Carbon dioxide"},
+
+{q:"Which activity helps reduce pollution?",options:["Recycling","Burning waste","Dumping garbage","Cutting trees"],answer:"Recycling"},
+
+{q:"Which natural resource is essential for crop irrigation?",options:["Water","Metal","Plastic","Glass"],answer:"Water"},
+
+{q:"Which practice helps maintain soil fertility?",options:["Crop rotation","Overgrazing","Mining","Pollution"],answer:"Crop rotation"},
+
+{q:"Which environmental problem results from cutting too many trees?",options:["Deforestation","Urbanization","Transportation","Communication"],answer:"Deforestation"},
+
+{q:"Which profession studies soil and crop production?",options:["Agronomist","Lawyer","Doctor","Engineer"],answer:"Agronomist"},
+
+{q:"Which action helps conserve wildlife?",options:["Protecting habitats","Hunting animals","Polluting rivers","Cutting forests"],answer:"Protecting habitats"},
+
+{q:"Which concept refers to using resources without harming future generations?",options:["Sustainability","Pollution","Waste","Overuse"],answer:"Sustainability"}
+],
+
+"Education / Teaching":[
+{q:"Which profession focuses on teaching students?",options:["Teacher","Doctor","Engineer","Lawyer"],answer:"Teacher"},
+
+{q:"Which skill helps teachers explain concepts clearly?",options:["Communication","Driving","Painting","Cooking"],answer:"Communication"},
+
+{q:"Which method helps students understand concepts through examples?",options:["Teaching method","Engineering design","Medical test","Legal case"],answer:"Teaching method"},
+
+{q:"Which activity helps students remember lessons better?",options:["Practice","Ignoring","Sleeping","Skipping"],answer:"Practice"},
+
+{q:"Which skill helps teachers manage classrooms effectively?",options:["Classroom management","Driving","Drawing","Cooking"],answer:"Classroom management"},
+
+{q:"Which field studies how people learn?",options:["Educational psychology","Biology","Physics","Engineering"],answer:"Educational psychology"},
+
+{q:"Which activity involves explaining difficult topics simply?",options:["Teaching","Cooking","Driving","Painting"],answer:"Teaching"},
+
+{q:"Which tool is commonly used to present lessons visually?",options:["Presentation slides","Engine","Circuit","Hammer"],answer:"Presentation slides"},
+
+{q:"Which skill motivates students to learn?",options:["Encouragement","Punishment","Silence","Ignoring"],answer:"Encouragement"},
+
+{q:"Which activity helps evaluate student understanding?",options:["Assessment","Decoration","Driving","Cooking"],answer:"Assessment"},
+
+{q:"Which profession guides students in choosing careers?",options:["Career counselor","Mechanic","Pilot","Chef"],answer:"Career counselor"},
+
+{q:"Which activity involves helping students solve academic problems?",options:["Mentoring","Driving","Cooking","Painting"],answer:"Mentoring"},
+
+{q:"Which skill helps teachers organize lesson plans?",options:["Planning","Running","Singing","Dancing"],answer:"Planning"},
+
+{q:"Which method encourages student participation in class?",options:["Discussion","Silence","Ignoring","Punishment"],answer:"Discussion"},
+
+{q:"Which profession focuses on educational research and learning methods?",options:["Education researcher","Engineer","Doctor","Lawyer"],answer:"Education researcher"}
+]
+
+}
+
+const personalityQuestions=[
+"I feel confident when speaking in front of others",
+"I like exploring new ideas and concepts",
+"I stay calm when facing difficult situations",
+"I prefer creative tasks rather than routine work",
+"I am comfortable taking leadership roles in a group",
+"I like analyzing data and finding patterns",
+"I easily adapt to changes in plans or situations",
+"I enjoy helping others solve their problems",
+"I prefer structured tasks with clear instructions",
+"I often think about how things work or why they happen",
+"I feel motivated to achieve high goals",
+"I like working on innovative projects",
+"I remain focused even when tasks are challenging",
+"I prefer practical work rather than theoretical study",
+"I enjoy discussing different viewpoints",
+"I like organizing tasks and planning activities",
+"I am curious about learning new technologies or tools",
+"I enjoy working with numbers and statistics",
+"I feel comfortable making important decisions",
+"I prefer careers that allow creativity and imagination",
+"I enjoy teamwork and collaboration",
+"I am patient when solving complicated problems",
+"I prefer tasks where results can be measured clearly",
+"I like experimenting with new ideas or methods",
+"I am confident in expressing my opinions",
+"I enjoy planning long-term goals",
+"I stay motivated even after failure",
+"I like exploring different career possibilities"
+]
+
+const domainQuestions={
+
+"Engineering / Technology":[
+"Do you enjoy solving logical or technical problems",
+"How comfortable are you with mathematics and physics",
+"Do you enjoy learning programming languages",
+"Do you like building or repairing electronic devices",
+"Would you enjoy designing software or applications",
+"Do you like understanding how machines work",
+"Are you interested in robotics or artificial intelligence",
+"Do you enjoy participating in technical competitions",
+"Would you prefer working on technology projects",
+"Are you comfortable learning complex technical concepts",
+"I like working with computers, machines, or new technologies",
+"I enjoy designing systems, apps, or technical solutions",
+"I enjoy experimenting with technology or learning new technical skills",
+"I am interested in developing innovative technological solutions",
+"I like analyzing how technology can improve everyday life"
+],
+
+"Medical / Healthcare":[
+"I enjoy helping people improve their health and well-being",
+"I am interested in learning about the human body and diseases",
+"I feel comfortable working in hospitals or healthcare environments",
+"I am patient and careful while dealing with sensitive situations",
+"I am interested in biology, medicine, or healthcare research",
+"I like studying topics related to health and medical science",
+"I enjoy supporting and caring for people during difficult situations",
+"I am interested in finding solutions to health-related problems",
+"Do you enjoy biology and chemistry subjects",
+"Do you like helping sick or injured people",
+"Are you comfortable studying for many years for specialization",
+"Do you have patience when dealing with patients",
+"Would you enjoy learning about medicines and treatments",
+"Can you handle stressful situations calmly",
+"Are you comfortable with practical lab work"
+],
+
+"Business / Management":[
+"I enjoy organizing activities and managing tasks or teams",
+"I like learning about business strategies and entrepreneurship",
+"I am interested in marketing, finance, or starting my own business",
+"I enjoy negotiating and communicating with people",
+"I like analyzing business problems and making decisions",
+"I enjoy leading projects and coordinating with different people",
+"I am interested in understanding how companies grow and succeed",
+"I like planning strategies to achieve business goals",
+"Do you like analyzing market trends",
+"Are you interested in finance or investment",
+"Do you enjoy leadership roles",
+"Are you interested in management studies like MBA",
+"Do you enjoy solving business problems",
+"Do you enjoy managing teams or projects",
+"Do you enjoy organizing events or activities"
+],
+
+"Law / Legal studies":[
+"I enjoy debating and defending my ideas logically",
+"I am interested in understanding laws and legal systems",
+"I like analyzing arguments and evidence carefully",
+"I enjoy discussing justice, rights, and social responsibility",
+"I am interested in protecting people’s rights through legal systems",
+"I enjoy reading about legal cases and court decisions",
+"I like solving disputes through logical reasoning",
+"I am interested in understanding how laws impact society",
+"Do you enjoy debating or arguing logically",
+"Are you interested in laws and justice",
+"Do you enjoy analyzing case studies",
+"Are you interested in public speaking",
+"Do you enjoy defending your viewpoints",
+"Are you comfortable with extensive reading",
+"Are you interested in becoming a lawyer or judge"
+],
+
+"Arts / Humanities":[
+"Do you enjoy reading books and literature",
+"Are you interested in history or culture",
+"Do you enjoy writing essays, poems, or articles",
+"Are you interested in psychology or human behavior",
+"Do you enjoy debates and discussions",
+"Are you interested in journalism or media",
+"Do you like studying society and social issues",
+"Do you enjoy public speaking",
+"Are you interested in philosophy",
+"Do you enjoy storytelling or script writing",
+"Do you enjoy analyzing historical events",
+"Are you interested in understanding different cultures",
+"Do you enjoy expressing ideas through writing",
+"Are you interested in studying human behavior and emotions",
+"Do you like discussing social and ethical issues",
+"Are you interested in working in media or communication fields",
+"Do you enjoy researching topics related to society",
+"Do you like presenting ideas or opinions to others",
+"Are you interested in creative writing or content creation",
+"Do you enjoy learning about politics and governance"
+],
+
+"Architecture / Design":[
+"Do you enjoy drawing buildings or structures",
+"Are you interested in designing homes or cities",
+"Do you like working with creative software like AutoCAD or SketchUp",
+"Do you enjoy sketching or artistic activities",
+"Do you notice architectural designs around you",
+"Are you interested in interior design",
+"Do you enjoy visualizing structures in 3D",
+"Do you like working on creative projects",
+"Are you interested in sustainable building designs",
+"Do you enjoy combining creativity with technical knowledge",
+"Do you enjoy planning layouts for buildings or spaces",
+"Are you interested in landscape design and outdoor spaces",
+"Do you like creating models or prototypes of designs",
+"Do you enjoy studying famous architectural structures",
+"Are you interested in urban planning and smart cities",
+"Do you enjoy experimenting with colors, shapes, and design elements",
+"Do you like designing functional and aesthetic spaces",
+"Are you interested in learning digital design tools",
+"Do you enjoy presenting your creative design ideas to others",
+"Do you like observing how spaces influence people's experiences"
+],
+
+"Agriculture / Environmental Science":[
+"Do you enjoy working with plants or farming",
+"Are you interested in environmental protection",
+"Do you enjoy outdoor work",
+"Are you interested in food production technologies",
+"Do you like studying ecosystems",
+"Are you interested in sustainable agriculture",
+"Do you enjoy working with animals",
+"Are you interested in climate change solutions",
+"Do you enjoy field research",
+"Are you interested in soil and crop science",
+"I am interested in protecting nature and the environment",
+"I like learning about climate change and sustainability",
+"I enjoy activities related to conservation and environmental awareness",
+"I am interested in solving environmental challenges",
+"I am interested in studying ecosystems and natural resources",
+"I enjoy spreading awareness about environmental issues",
+"I want to contribute to sustainable development",
+"Do you enjoy learning about natural resources and biodiversity",
+"Are you interested in agricultural innovations and technologies",
+"Do you like studying how farming impacts the environment"
+],
+
+"Education / Teaching":[
+"Do you enjoy teaching others",
+"Are you patient when explaining concepts",
+"Do you enjoy helping classmates understand topics",
+"Are you interested in educational psychology",
+"Do you enjoy creating presentations or lessons",
+"Are you interested in guiding students",
+"Do you like public speaking",
+"Do you enjoy mentoring younger students",
+"Are you interested in academic research",
+"Do you enjoy explaining difficult concepts simply",
+"I enjoy helping others learn new skills",
+"I like organizing educational activities or workshops",
+"I am interested in understanding how students learn",
+"I enjoy preparing study materials or notes",
+"I like motivating others to achieve academic goals",
+"I enjoy discussing educational ideas and teaching methods",
+"I am interested in improving learning experiences for students",
+"I like explaining concepts using real-life examples",
+"I enjoy supporting students in their academic growth",
+"I feel satisfied when others understand something because of my explanation"
+],
+
+}
+
+let scores={
+interest:0,
+Analytical:0,
+personality:0,
+domain:0
+}
+
+let interestDomainScores = {
+Engineering:0,
+Medical:0,
+Business:0,
+Arts:0,
+Architecture:0,
+Agriculture:0,
+Education:0,
+Science:0
+}
+
+let currentIndex=0
+
+function getRandom(arr,count){
+let shuffled=[...arr].sort(()=>0.5-Math.random())
+return shuffled.slice(0,count)
+}
+
+let questionSet=[
+...getRandom(interestQuestions,5),
+...getRandom(AnalyticalQuestions[studentInterest],3),
+...getRandom(personalityQuestions,4),
+...getRandom(domainQuestions[studentInterest],3)
+]
+
+function loadQuestion(){
+
+let q=questionSet[currentIndex]
+let form=document.getElementById("answerForm")
+form.innerHTML=""
+
+document.getElementById("progressBar").style.width=(currentIndex/TOTAL_QUESTIONS*100)+"%"
+
+let categoryBadge = document.getElementById("categoryBadge")
+
+if(typeof q==="object" && q.options){
+
+    categoryBadge.className="badge bg-primary mb-3 px-4 py-2 fs-6"
+    categoryBadge.innerText="Analytical"
+
+    document.getElementById("questionText").innerText = q.q || q
+
+    q.options.forEach(opt=>{
+        form.innerHTML+=`
+        <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="answer" value="${opt}">
+        <label class="form-check-label">${opt}</label>
+        </div>
+        `
+    })
+
+}
+
+else{
+
+    if(currentIndex < 5){
+        categoryBadge.className="badge bg-primary mb-3 px-4 py-2 fs-6"
+        categoryBadge.innerText="Interest"
+    }
+    else if(currentIndex < 8){
+        categoryBadge.className="badge bg-primary mb-3 px-4 py-2 fs-6"
+        categoryBadge.innerText="Analytical"
+    }
+    else if(currentIndex < 12){
+        categoryBadge.className="badge bg-primary mb-3 px-4 py-2 fs-6"
+        categoryBadge.innerText="Personality"
+    }
+    else{
+        categoryBadge.className="badge bg-primary mb-3 px-4 py-2 fs-6"
+        categoryBadge.innerText="Domain Knowledge"
+    }
+
+    document.getElementById("questionText").innerText = q.q || q
+
+    let scale=["Strongly Agree","Agree","Neutral","Disagree","Strongly Disagree"]
+
+    scale.forEach((s,i)=>{
+        form.innerHTML+=`
+        <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="answer" value="${5-i}">
+        <label class="form-check-label">${s}</label>
+        </div>
+        `
+    })
+
+}
+
+}
+
+function nextQuestion(){
+
+let selected=document.querySelector("input[name='answer']:checked")
+
+if(!selected){
+alert("Please select an answer")
+return
+}
+
+let answer=selected.value
+let q=questionSet[currentIndex]
+
+if(typeof q==="object" && q.options){
+
+    if(answer === q.answer){
+        scores.Analytical += 10
+    }
+
+}
+else{
+
+    if(currentIndex < 5){
+        scores.interest += parseInt(answer)
+
+        if(q.domain && interestDomainScores[q.domain] !== undefined){
+            interestDomainScores[q.domain] += parseInt(answer)
+        }
+    }
+
+    else if(currentIndex < 8){
+        scores.Analytical += parseInt(answer)
+    }
+
+    else if(currentIndex < 12){
+        scores.personality += parseInt(answer)
+    }
+
+    else{
+        scores.domain += parseInt(answer)
+    }
+
+}
+
+
+currentIndex++
+
+if(currentIndex===TOTAL_QUESTIONS-1){
+
+document.getElementById("nextBtn").innerText="Submit Test"
+
+}
+
+if(currentIndex>=TOTAL_QUESTIONS){
+
+submitTest()
+return
+
+}
+
+loadQuestion()
+
+}
+
+function submitTest(){
+
+scores.interest = Math.round((scores.interest / (interestTotal * 5)) * 100)
+scores.Analytical = Math.round((scores.Analytical / (analyticalTotal * 10)) * 100)
+scores.personality = Math.round((scores.personality / (personalityTotal * 5)) * 100)
+scores.domain = Math.round((scores.domain / (domainTotal * 5)) * 100)
+
+fetch("/submit_test",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+    ...scores,
+    interestDomains: interestDomainScores
+})
+})
+.then(response => response.json())
+.then(data => {
+
+if(data.status === "success"){
+window.location.href = "/result"
+}
+
+})
+}
+loadQuestion()
+
+</script>
+
+{% endblock %}

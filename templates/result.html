@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4 fade-section">
+
+<!-- DOWNLOAD BUTTON OUTSIDE PDF AREA -->
+
+<div class="text-end mb-3">
+<button class="btn btn-primary no-print"
+onclick="downloadPDF()">
+<i class="fa-solid fa-download me-2"></i>
+Download Career Report
+</button>
+</div>
+
+<!-- PDF EXPORT START -->
+
+<div id="reportContainer">
+
+<!-- HEADER -->
+
+<div class="text-center mb-2">
+<p class="fw-semibold mb-0">
+AI Career Counseling & Skill Gap Analysis System
+</p>
+<p class="text-muted small">
+Generated Report
+</p>
+</div>
+
+<div class="text-center mb-4">
+<h2 class="fw-bold">AI Career Assessment Report</h2>
+<p class="text-muted">
+Personalized career insights generated from your profile and assessment
+</p>
+</div>
+
+<!-- MAIN ROW -->
+
+<div class="row g-4 pdf-row">
+
+<!-- LEFT PANEL -->
+
+<div class="col-lg-5">
+
+<div class="card shadow border-0 rounded-4 p-4 h-100">
+
+<h5 class="fw-bold text-primary mb-3">
+Career Recommendation
+</h5>
+
+<div class="recommendation-box mb-4">
+
+<div class="recommendation-content" id="aiResult">
+{{ ai_result }}
+</div>
+
+</div>
+
+<!-- CAREER FIT SCORE -->
+
+<p class="fw-semibold mb-2">Overall Career Fit</p>
+
+{% set score = ((interest + Analytical + personality + domain) / 4) %}
+
+<div class="progress mb-4" style="height:20px">
+
+<div class="progress-bar bg-success fw-semibold"
+style="width: {{ score }}%">
+
+{{ score|round(0) }}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT PANEL -->
+
+<div class="col-lg-7">
+
+<div class="card shadow border-0 rounded-4 p-4">
+
+<h5 class="fw-bold mb-3">Skill Performance Analysis</h5>
+
+<canvas id="resultChart"></canvas>
+
+<hr class="my-4">
+
+<h6 class="fw-bold mt-3">Interest by Career Fields</h6>
+
+<canvas id="domainChart"></canvas>
+
+<p class="text-muted mt-3">
+Visualization of your assessment performance across interest,
+logical ability, personality traits and domain knowledge.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SCORE CARDS -->
+
+<div class="row mt-4 g-4 text-center">
+
+<div class="col-md-3">
+<div class="card score-card">
+<h3>{{ interest }}</h3>
+<p>Interest Score</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card score-card">
+<h3>{{ Analytical }}</h3>
+<p>Analytical Ability</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card score-card">
+<h3>{{ personality }}</h3>
+<p>Personality Traits</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card score-card">
+<h3>{{ domain }}</h3>
+<p>Domain Knowledge</p>
+</div>
+</div>
+
+</div>
+
+
+<!-- SKILL DISTRIBUTION -->
+
+<div class="card shadow border-0 rounded-4 p-4 mt-4">
+
+<h5 class="fw-bold mb-4">Skill Strength Distribution</h5>
+
+<p>Interest Alignment</p>
+<div class="progress mb-3">
+<div class="progress-bar bg-info"
+style="width:{{ interest}}%">
+</div>
+</div>
+
+<p>Analytical Ability</p>
+<div class="progress mb-3">
+<div class="progress-bar bg-primary"
+style="width:{{ Analytical}}%">
+</div>
+</div>
+
+<p>Personality Traits</p>
+<div class="progress mb-3">
+<div class="progress-bar bg-warning"
+style="width:{{ personality}}%">
+</div>
+</div>
+
+<p>Domain Knowledge</p>
+<div class="progress">
+<div class="progress-bar bg-success"
+style="width:{{ domain}}%">
+</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- PDF EXPORT END -->
+
+</div>
+
+
+<!-- CHART SCRIPT -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+const ctx = document.getElementById('resultChart');
+
+new Chart(ctx, {
+
+type:'bar',
+
+data:{
+labels:[
+'Interest',
+'Analytical Ability',
+'Personality Traits',
+'Domain Knowledge'
+],
+
+datasets:[{
+
+data:[
+{{ interest}},
+{{ Analytical}},
+{{ personality}},
+{{ domain}}
+],
+
+backgroundColor:[
+'#38bdf8',
+'#3b82f6',
+'#f59e0b',
+'#10b981'
+],
+
+borderRadius:6,
+barThickness:40
+
+}]
+},
+
+options:{
+responsive:true,
+plugins:{legend:{display:false}},
+scales:{
+x:{grid:{display:false}},
+y:{
+min:0,
+max:100,
+ticks:{stepSize:20}
+}
+}
+}
+
+});
+
+</script>
+
+
+<script>
+
+const domainData = {{ interest_domains | tojson }};
+
+const labels = Object.keys(domainData);
+const values = Object.values(domainData);
+
+const ctx2 = document.getElementById('domainChart');
+
+new Chart(ctx2, {
+
+type:'bar',
+
+data:{
+labels:labels,
+datasets:[{
+data:values,
+backgroundColor:'#38bdf8',
+borderRadius:6
+}]
+},
+
+options:{
+responsive:true,
+plugins:{legend:{display:false}},
+scales:{
+y:{min:0,ticks:{stepSize:5}}
+}
+}
+
+});
+
+</script>
+
+
+<!-- MARKDOWN FORMAT SUPPORT -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+
+const aiText = `{{ ai_result | replace("`","\\`") }}`;
+
+document.getElementById("aiResult").innerHTML =
+marked.parse(aiText);
+
+</script>
+
+
+<!-- PDF SCRIPT -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+
+async function downloadPDF(){
+
+const element =
+document.getElementById("reportContainer");
+
+document.body.classList.add("pdf-mode");
+
+window.scrollTo(0,0);
+
+// WAIT FOR CHARTS + MARKDOWN
+await new Promise(resolve => setTimeout(resolve,3000));
+
+const opt = {
+
+margin:0.3,
+filename:'AI_Career_Report.pdf',
+
+image:{type:'jpeg',quality:1},
+
+html2canvas:{
+scale:4,
+useCORS:true,
+allowTaint:true,
+letterRendering:true,
+backgroundColor:"#ffffff"
+},
+
+jsPDF:{
+unit:'in',
+format:'a4',
+orientation:'portrait'
+}
+
+};
+
+await html2pdf().set(opt).from(element).save();
+
+document.body.classList.remove("pdf-mode");
+
+}
+
+
+</script>
+
+
+<!-- STYLE -->
+
+<style>
+
+#reportContainer{
+background:white;
+padding:20px;
+}
+
+.score-card{
+padding:25px;
+border-radius:14px;
+border:1px solid #eee;
+}
+
+.score-card h3{
+font-weight:bold;
+color:#2563eb;
+}
+
+.recommendation-box{
+background:#f8f9fa;
+border-left:6px solid #2563eb;
+border-radius:12px;
+padding:20px;
+}
+
+.recommendation-content{
+font-size:14px;
+line-height:1.6;
+max-height:260px;
+overflow:hidden;
+}
+
+canvas{
+max-height:260px;
+}
+
+
+/* PDF MODE */
+
+.pdf-mode .no-print{
+display:none !important;
+}
+
+.pdf-mode .card{
+box-shadow:none !important;
+border:1px solid #ddd !important;
+}
+
+.pdf-mode .pdf-row{
+display:flex !important;
+flex-wrap:nowrap !important;
+}
+
+.pdf-mode h2,
+.pdf-mode h5{
+color:black !important;
+}
+
+/* FORCE CLEAN PDF RENDERING */
+
+.pdf-mode .card,
+.pdf-mode .score-card,
+.pdf-mode .recommendation-box {
+background: #ffffff !important;
+background-image: none !important;
+color: #000 !important;
+}
+
+.pdf-mode canvas {
+display: block !important;
+visibility: visible !important;
+}
+
+.pdf-mode * {
+opacity: 1 !important;
+transform: none !important;
+filter: none !important;
+}
+
+.pdf-mode .progress-bar {
+color: black !important;
+}
+
+/* FORCE CLEAN PDF CONTENT CAPTURE */
+
+.pdf-mode,
+.pdf-mode *{
+background-image:none !important;
+box-shadow:none !important;
+filter:none !important;
+transform:none !important;
+opacity:1 !important;
+color:#000 !important;
+}
+
+/* REMOVE GLOBAL GRADIENT FROM BASE.HTML */
+
+.pdf-mode body{
+background:#ffffff !important;
+}
+
+/* ENSURE CARDS ARE VISIBLE */
+
+.pdf-mode .card{
+background:#ffffff !important;
+border:1px solid #ddd !important;
+}
+
+/* ENSURE TEXT SHOWS */
+
+.pdf-mode h1,
+.pdf-mode h2,
+.pdf-mode h3,
+.pdf-mode h4,
+.pdf-mode h5,
+.pdf-mode p,
+.pdf-mode span{
+visibility:visible !important;
+}
+
+/* ENSURE CHARTS RENDER */
+
+.pdf-mode canvas{
+display:block !important;
+visibility:visible !important;
+}
+
+/* Disable animations during PDF export */
+
+.pdf-mode .fade-section{
+opacity:1 !important;
+transform:none !important;
+transition:none !important;
+}
+
+.recommendation-content{
+max-height:none !important;
+overflow:visible !important;
+}
+
+.card{
+page-break-inside: avoid;
+}
+</style>
+
+{% endblock %}

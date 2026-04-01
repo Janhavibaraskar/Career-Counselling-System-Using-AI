@@ -1,0 +1,11 @@
+Flask
+pdfplumber
+pytesseract
+Pillow
+groq
+python-dotenv
+numpy
+pandas
+scikit-learn
+Flask-SQLAlchemy
+pymysql

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+  <!-- Page Header -->
+  <div class="text-center mb-5 fade-section">
+    <h2 class="fw-bold">Career Assessment – Student Profile</h2>
+    <p class="text-muted mt-2">
+      Step 1 of 2 · Tell us about your academic background to begin
+    </p>
+  </div>
+
+  <!-- Assessment Card -->
+  <div class="row justify-content-center fade-section">
+    <div class="col-lg-8 col-md-10">
+
+      <div class="card shadow-lg border-0 rounded-4 p-5">
+
+        <!-- Progress Indicator -->
+        <div class="mb-4">
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-success" style="width: 40%;"></div>
+          </div>
+          <small class="text-muted">Profile completion</small>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+
+          <!-- Academic Level -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Academic Level
+            </label>
+
+            <select name="level" class="form-select form-select-lg" required>
+              <option value="" disabled selected>Select your academic level</option>
+              <option>Class 10</option>
+              <option>Class 12</option>
+              <option>Graduate</option>
+            </select>
+          </div>
+
+          <!-- Stream Interest -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Select Your Interest Area / Stream
+            </label>
+
+            <select name="interests" class="form-select form-select-lg" required>
+
+              <option value="" disabled selected>Select your interest</option>
+
+              <option>Engineering / Technology</option>
+              <option>Medical / Healthcare</option>
+              <option>Business / Management</option>
+              <option>Law / Legal Studies</option>
+              <option>Architecture / Design</option>
+              <option>Arts / Humanities</option>
+              <option>Social Sciences</option>
+              <option>Economics / Finance</option>
+              <option>Agriculture / Environmental Science</option>
+              <option>Education / Teaching</option>
+             
+
+            </select>
+
+            <small class="text-muted">
+              This helps us personalize your assessment questions
+            </small>
+
+          </div>
+
+          <!-- Document Upload -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              Upload Academic Document
+            </label>
+
+            <input type="file"
+                   class="form-control form-control-lg"
+                   name="document"
+                   required>
+
+            <small class="text-muted">
+              Class 10 & 12: Marksheet | Graduate: Resume (PDF / Image)
+            </small>
+          </div>
+
+          <!-- Divider -->
+          <hr class="my-4">
+
+          <!-- CTA -->
+          <div class="d-grid">
+            <button class="btn btn-success btn-lg">
+              Start Assessment
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

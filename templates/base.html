@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Career Counselor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* Navbar polish */
+        .navbar {
+            padding: 14px 0;
+        }
+        .navbar-brand {
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+        }
+        .nav-link {
+    margin-left: 12px;
+    font-weight: 600;
+    color: white !important;
+    opacity: 1 !important;
+         }
+         .nav-link:hover{
+    color:#ffd166 !important;
+}
+        
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="fa-solid fa-graduation-cap me-1"></i>
+      AI Career Counselor
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/assessment">Assessment</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">About</a>
+        </li>
+        {% if session.get("user_id") %}
+<li class="nav-item ms-lg-3">
+  <a class="nav-link fw-semibold" href="/logout">
+    Logout
+  </a>
+</li>
+{% else %}
+<li class="nav-item ms-lg-3">
+  <a class="nav-link fw-semibold" href="/login">
+    Login
+  </a>
+</li>
+{% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="container my-5">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-dark text-light py-4 mt-5">
+  <div class="container text-center">
+    <p class="mb-1 fw-semibold">AI Career Counseling & Skill Gap Analysis System</p>
+    <p class="mb-0 text-muted">
+      © 2025 | Academic Project | Built with Flask & Bootstrap
+    </p>
+  </div>
+</footer>
+
+<!-- ===== BOOTSTRAP JS ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ===== SCROLL ANIMATION SCRIPT ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Disable animation while exporting PDF
+  if(document.body.classList.contains("pdf-mode")) return;
+
+  const sections = document.querySelectorAll(".fade-section");
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sections.forEach(section => {
+    observer.observe(section);
+  });
+
+});
+</script>
+
+</body>
+</html>
