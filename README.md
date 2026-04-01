@@ -54,7 +54,7 @@ Career Counselling System/
 
 Clone repository
 
-git clone https://github.com/yourusername/AI-Career-Counselor-System.git
+git clone https://github.com/Janhavibaraskar/Career-Counselling-System-Using-AI
 
 Move into project directory
 
